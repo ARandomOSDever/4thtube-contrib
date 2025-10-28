@@ -1888,9 +1888,9 @@ void VideoPlayer_init(void) {
 	    if (video_should_draw_top_bar()) {
 		    Draw_top_ui();
 	    }
-	    if (var_debug_mode) {
-		    Draw_debug_info();
-	    }
+	    //if (var_debug_mode) {
+		    Draw_debug_info(var_debug_mode);
+	    //}
     }
 
     static void decode_thread(void *arg) {
