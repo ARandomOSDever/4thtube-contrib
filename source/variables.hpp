@@ -50,7 +50,7 @@ extern int var_system_region;
 extern bool var_is_new3ds;
 extern bool var_core2_available;
 extern bool var_core3_available;
-extern bool var_app_suspended; // i.e. home button preessed
+extern bool var_app_suspended; // i.e. home button pressed
 
 #define COMMUNITY_IMAGE_SIZE_MIN 50
 #define COMMUNITY_IMAGE_SIZE_DEFAULT 200
