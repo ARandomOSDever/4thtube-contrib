@@ -310,11 +310,11 @@ bool Menu_main(void) {
 
 	// common updates
 	if (key.h_select && key.p_y) {
-        if (var_debug_mode < 3) {
-		    var_debug_mode++;
-        } else {
-            var_debug_mode = 0;
-        }
+		if (var_debug_mode < 3) {
+			var_debug_mode++;
+		} else {
+			var_debug_mode = 0;
+		}
 	}
 	if (key.h_select && key.h_r && key.p_a) {
 		var_show_fps = !var_show_fps;
