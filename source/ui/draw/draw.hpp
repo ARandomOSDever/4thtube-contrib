@@ -46,7 +46,7 @@ void Draw_texture(C2D_Image image, int abgr8888, float x, float y, float x_size,
 
 void Draw_line(float x_0, float y_0, int abgr8888_0, float x_1, float y_1, int abgr8888_1, float width);
 
-void Draw_debug_info(void);
+void Draw_debug_info(u8 val);
 
 Result_with_string Draw_init(bool wide);
 

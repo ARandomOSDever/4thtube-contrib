@@ -75,7 +75,7 @@ You can use the QR code below to download & install the .cia directly from your 
 Below are for debug purposes
 
  - Select + X : toggle debug log
- - Select + Y : toggle memory usage monitor
+ - Select + Y : rotate through debug info (inputs, performance timers and free memory)
  - Select + R + A : toggle FPS monitor
 
 

@@ -235,10 +235,9 @@ void VideoPlayer_init(void) {
 }, 0)
 		->set_title([](const SelectorView &view) {
 	return LOCALIZED(VIDEO); });
-        debug_info_view =
-            (new VerticalListView(0, 0, 320))
-                ->set_views(
-                    {(new TextView(SMALL_MARGIN, 0, 320, DEFAULT_FONT_INTERVAL * 8))
+debug_info_view =
+    (new VerticalListView(0, 0, 320))
+        ->set_views({(new TextView(SMALL_MARGIN, 0, 320, DEFAULT_FONT_INTERVAL * 8))
                          ->set_text_lines<std::function<std::string()>>(
                              {[]() { return vid_video_format; }, []() { return vid_audio_format; },
                               []() {
@@ -293,8 +292,8 @@ void VideoPlayer_init(void) {
 	                     Draw_line(0, y + 90 - vid_frametime, 0xFFFFFF00, 320, y + 90 - vid_frametime, 0xFFFFFF00, 2);
 	                     if (vid_total_frames != 0 && vid_min_time != 0 && vid_recent_total_time != 0) {
 		                     Draw("Avg: " + std::to_string(1000 / (vid_total_time / vid_total_frames)).substr(0, 5) +
-		                              " Min: " + std::to_string(1000 / vid_max_time).substr(0, 5) + " Max: " +
-		                              std::to_string(1000 / vid_min_time).substr(0, 5) + " Recent Avg: " +
+		                              " Min: " + std::to_string(1000 / vid_max_time).substr(0, 5) +
+		                              " Max: " + std::to_string(1000 / vid_min_time).substr(0, 5) + " Recent Avg: " +
 		                              std::to_string(1000 / (vid_recent_total_time / 90)).substr(0, 5) + " FPS",
 		                          0, y + 90, 0.4, 0.4, DEFAULT_TEXT_COLOR);
 	                     }
@@ -817,59 +816,61 @@ void VideoPlayer_init(void) {
 		    }
 	    }
 	    std::string author_id = comment.author.id;
-	    PostView* result = (new PostView(0, 0, 320))
-	        ->set_author_name(comment.author.name)
-	        ->set_author_icon_url(comment.author.icon_url)
-	        ->set_time_str(comment.publish_date)
-	        ->set_upvote_str(comment.upvotes_str)
-	        ->set_content_lines(cur_lines)
-	        ->set_has_more_replies(
-	            [comment_index]() { return cur_video_info.comments[comment_index].has_more_replies(); })
-	        ->set_on_author_icon_pressed([author_id](const PostView &view) { channel_id_pressed = author_id; })
-	        ->set_on_load_more_replies_pressed([comment_index](PostView &view) {
-		        queue_async_task(load_more_replies, (void *)comment_index);
-		        view.is_loading_replies = true;
-	        })
-	        ->set_on_timestamp_pressed([](double seconds) {
-		        send_seek_request_wo_lock(seconds);
-		        var_need_refresh = true;
-	        });
+	    PostView *result =
+	        (new PostView(0, 0, 320))
+	            ->set_author_name(comment.author.name)
+	            ->set_author_icon_url(comment.author.icon_url)
+	            ->set_time_str(comment.publish_date)
+	            ->set_upvote_str(comment.upvotes_str)
+	            ->set_content_lines(cur_lines)
+	            ->set_has_more_replies(
+	                [comment_index]() { return cur_video_info.comments[comment_index].has_more_replies(); })
+	            ->set_on_author_icon_pressed([author_id](const PostView &view) { channel_id_pressed = author_id; })
+	            ->set_on_load_more_replies_pressed([comment_index](PostView &view) {
+		            queue_async_task(load_more_replies, (void *)comment_index);
+		            view.is_loading_replies = true;
+	            })
+	            ->set_on_timestamp_pressed([](double seconds) {
+		            send_seek_request_wo_lock(seconds);
+		            var_need_refresh = true;
+	            });
 
 	    for (size_t i = 0; i < comment.replies.size(); i++) {
-	        auto &cur_reply = comment.replies[i];
-	        auto &cur_content = cur_reply.content;
-	        std::vector<std::string> cur_reply_lines;
-	        auto itr = cur_content.begin();
-	        while (itr != cur_content.end()) {
-	            if (cur_reply_lines.size() >= COMMENT_MAX_LINE_NUM) {
-	                break;
-	            }
-	            auto next_itr = std::find(itr, cur_content.end(), '\n');
-	            auto tmp = truncate_str(std::string(itr, next_itr), REPLY_MAX_WIDTH,
-	                                    COMMENT_MAX_LINE_NUM - cur_reply_lines.size(), 0.5, 0.5);
-	            cur_reply_lines.insert(cur_reply_lines.end(), tmp.begin(), tmp.end());
+		    auto &cur_reply = comment.replies[i];
+		    auto &cur_content = cur_reply.content;
+		    std::vector<std::string> cur_reply_lines;
+		    auto itr = cur_content.begin();
+		    while (itr != cur_content.end()) {
+			    if (cur_reply_lines.size() >= COMMENT_MAX_LINE_NUM) {
+				    break;
+			    }
+			    auto next_itr = std::find(itr, cur_content.end(), '\n');
+			    auto tmp = truncate_str(std::string(itr, next_itr), REPLY_MAX_WIDTH,
+			                            COMMENT_MAX_LINE_NUM - cur_reply_lines.size(), 0.5, 0.5);
+			    cur_reply_lines.insert(cur_reply_lines.end(), tmp.begin(), tmp.end());
 
-	            if (next_itr != cur_content.end()) {
-	                itr = std::next(next_itr);
-	            } else {
-	                break;
-	            }
-	        }
-	        std::string reply_author_id = cur_reply.author.id;
-	        result->replies.push_back(
-	            (new PostView(REPLY_INDENT, 0, 320 - REPLY_INDENT))
-	                ->set_author_name(cur_reply.author.name)
-	                ->set_author_icon_url(cur_reply.author.icon_url)
-	                ->set_time_str(cur_reply.publish_date)
-	                ->set_upvote_str(cur_reply.upvotes_str)
-	                ->set_content_lines(cur_reply_lines)
-	                ->set_has_more_replies([]() { return false; })
-	                ->set_on_author_icon_pressed([reply_author_id](const PostView &view) { channel_id_pressed = reply_author_id; })
-	                ->set_is_reply(true)
-	                ->set_on_timestamp_pressed([](double seconds) {
-	                    send_seek_request_wo_lock(seconds);
-	                    var_need_refresh = true;
-	                }));
+			    if (next_itr != cur_content.end()) {
+				    itr = std::next(next_itr);
+			    } else {
+				    break;
+			    }
+		    }
+		    std::string reply_author_id = cur_reply.author.id;
+		    result->replies.push_back((new PostView(REPLY_INDENT, 0, 320 - REPLY_INDENT))
+		                                  ->set_author_name(cur_reply.author.name)
+		                                  ->set_author_icon_url(cur_reply.author.icon_url)
+		                                  ->set_time_str(cur_reply.publish_date)
+		                                  ->set_upvote_str(cur_reply.upvotes_str)
+		                                  ->set_content_lines(cur_reply_lines)
+		                                  ->set_has_more_replies([]() { return false; })
+		                                  ->set_on_author_icon_pressed([reply_author_id](const PostView &view) {
+			                                  channel_id_pressed = reply_author_id;
+		                                  })
+		                                  ->set_is_reply(true)
+		                                  ->set_on_timestamp_pressed([](double seconds) {
+			                                  send_seek_request_wo_lock(seconds);
+			                                  var_need_refresh = true;
+		                                  }));
 	    }
 
 	    return result;
@@ -1052,22 +1053,22 @@ void VideoPlayer_init(void) {
 						    break;
 					    }
 				    }
-				    
+
 				    // Create PostView for description to enable timestamp clicking
-				    PostView* description_view = (new PostView(0, 0, 320))
-				        ->set_is_description_mode(true)
-				        ->set_author_name("")
-				        ->set_author_icon_url("")
-				        ->set_time_str("")
-				        ->set_upvote_str("")
-				        ->set_content_lines(description_lines)
-				        ->set_has_more_replies([]() { return false; })
-				        ->set_on_timestamp_pressed([](double seconds) {
-				            send_seek_request_wo_lock(seconds);
-				            var_need_refresh = true;
-				        });
+				    PostView *description_view = (new PostView(0, 0, 320))
+				                                     ->set_is_description_mode(true)
+				                                     ->set_author_name("")
+				                                     ->set_author_icon_url("")
+				                                     ->set_time_str("")
+				                                     ->set_upvote_str("")
+				                                     ->set_content_lines(description_lines)
+				                                     ->set_has_more_replies([]() { return false; })
+				                                     ->set_on_timestamp_pressed([](double seconds) {
+					                                     send_seek_request_wo_lock(seconds);
+					                                     var_need_refresh = true;
+				                                     });
 				    description_view->lines_shown = description_lines.size();
-				    
+
 				    std::vector<View *> add_views = {
 				        description_view,
 				        (new RuleView(0, 0, 320, SMALL_MARGIN * 2))->set_get_color([]() { return DEF_DRAW_GRAY; })};
@@ -1514,8 +1515,8 @@ void VideoPlayer_init(void) {
 		            ->set_on_author_icon_pressed([author_id](const PostView &view) { channel_id_pressed = author_id; })
 		            ->set_is_reply(true)
 		            ->set_on_timestamp_pressed([](double seconds) {
-		                send_seek_request_wo_lock(seconds);
-		                var_need_refresh = true;
+			            send_seek_request_wo_lock(seconds);
+			            var_need_refresh = true;
 		            }));
 	    }
 	    logger.info("player/load-r", "truncate end");
@@ -1888,9 +1889,7 @@ void VideoPlayer_init(void) {
 	    if (video_should_draw_top_bar()) {
 		    Draw_top_ui();
 	    }
-	    if (var_debug_mode) {
-		    Draw_debug_info();
-	    }
+	    Draw_debug_info(var_debug_mode);
     }
 
     static void decode_thread(void *arg) {

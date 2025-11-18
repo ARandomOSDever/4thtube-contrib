@@ -484,11 +484,11 @@ Result_with_string Draw_load_texture(std::string file_name, int sheet_map_num, C
 
 void Draw_touch_pos(void) {
 	if (var_hide_pointer == false) {
-	Hid_info key;
-	Util_hid_query_key_state(&key);
-	if (key.p_touch || key.h_touch) {
-		Draw_texture(var_square_image[0], DEF_DRAW_RED, key.touch_x - 1, key.touch_y - 1, 3, 3);
-	}
+		Hid_info key;
+		Util_hid_query_key_state(&key);
+		if (key.p_touch || key.h_touch) {
+			Draw_texture(var_square_image[0], DEF_DRAW_RED, key.touch_x - 1, key.touch_y - 1, 3, 3);
+		}
 	}
 }
 
@@ -537,43 +537,61 @@ void Draw_line(float x_0, float y_0, int abgr8888_0, float x_1, float y_1, int a
 	}
 }
 
-void Draw_debug_info(void) {
+void Draw_debug_info(u8 val) {
 	int color = DEF_DRAW_BLACK;
 	Hid_info key;
 	Util_hid_query_key_state(&key);
 
+	if (val == 0) {
+		return;
+	}
 	if (var_night_mode) {
 		color = DEF_DRAW_WHITE;
 	}
-
-	Draw_texture(var_square_image[0], DEF_DRAW_WEAK_BLUE, 0.0, 18.0, 70.0, 140.0);
-	Draw_texture(var_square_image[0], DEF_DRAW_WEAK_BLUE, 0.0, 158.0, 110.0, 80.0);
-	Draw("A　 p: " + std::to_string(key.p_a) + " h: " + std::to_string(key.h_a), 0.0, 18.0, 0.4, 0.4, color);
-	Draw("B　 p: " + std::to_string(key.p_b) + " h: " + std::to_string(key.h_b), 0.0, 28.0, 0.4, 0.4, color);
-	Draw("X　 p: " + std::to_string(key.p_x) + " h: " + std::to_string(key.h_x), 0.0, 38.0, 0.4, 0.4, color);
-	Draw("Y　 p: " + std::to_string(key.p_y) + " h: " + std::to_string(key.h_y), 0.0, 48.0, 0.4, 0.4, color);
-	Draw("L　 p: " + std::to_string(key.p_l) + " h: " + std::to_string(key.h_l), 0.0, 58.0, 0.4, 0.4, color);
-	Draw("R　 p: " + std::to_string(key.p_r) + " h: " + std::to_string(key.h_r), 0.0, 68.0, 0.4, 0.4, color);
-	Draw("ZL　 p: " + std::to_string(key.p_zl) + " h: " + std::to_string(key.h_zl), 0.0, 78.0, 0.4, 0.4, color);
-	Draw("ZR　 p: " + std::to_string(key.p_zr) + " h: " + std::to_string(key.h_zr), 0.0, 88.0, 0.4, 0.4, color);
-	Draw("C↓ p: " + std::to_string(key.p_c_down) + " h: " + std::to_string(key.h_c_down), 0.0, 98.0, 0.4, 0.4, color);
-	Draw("C→ p: " + std::to_string(key.p_c_right) + " h: " + std::to_string(key.h_c_right), 0.0, 108.0, 0.4, 0.4,
-	     color);
-	Draw("C↑ p: " + std::to_string(key.p_c_up) + " h: " + std::to_string(key.h_c_up), 0.0, 118.0, 0.4, 0.4, color);
-	Draw("C← p: " + std::to_string(key.p_c_left) + " h: " + std::to_string(key.h_c_left), 0.0, 128.0, 0.4, 0.4, color);
-	Draw("D↓ p: " + std::to_string(key.p_d_down) + " h: " + std::to_string(key.h_d_down), 0.0, 138.0, 0.4, 0.4, color);
-	Draw("D→ p: " + std::to_string(key.p_d_right) + " h: " + std::to_string(key.h_d_right), 0.0, 148.0, 0.4, 0.4,
-	     color);
-	Draw("D↑ p: " + std::to_string(key.p_d_up) + " h: " + std::to_string(key.h_d_up), 0.0, 158.0, 0.4, 0.4, color);
-	Draw("D← p: " + std::to_string(key.p_d_left) + " h: " + std::to_string(key.h_d_left), 0.0, 168.0, 0.4, 0.4, color);
-	Draw("touch x: " + std::to_string(key.touch_x) + ", y: " + std::to_string(key.touch_y), 0.0, 178.0, 0.4, 0.4,
-	     color);
-	Draw("CPU: " + std::to_string(C3D_GetProcessingTime()).substr(0, 5) + "ms", 0.0, 188.0, 0.4, 0.4, color);
-	Draw("GPU: " + std::to_string(C3D_GetDrawingTime()).substr(0, 5) + "ms", 0.0, 198.0, 0.4, 0.4, color);
-	Draw("Frametime: " + std::to_string(draw_frametime[19]).substr(0, 6) + "ms", 0.0, 208.0, 0.4, 0.4, color);
+	switch (val) {
+	case 1:
+		Draw_texture(var_square_image[0], DEF_DRAW_WEAK_BLUE, 0.0, 18.0, 70.0, 220.0);
+		Draw_texture(var_square_image[0], DEF_DRAW_WEAK_BLUE, 70.0, 158.0, 40.0, 80.0);
+		Draw("A p: " + std::to_string(key.p_a) + " h: " + std::to_string(key.h_a), 0.0, 18.0, 0.4, 0.4, color);
+		Draw("B p: " + std::to_string(key.p_b) + " h: " + std::to_string(key.h_b), 0.0, 28.0, 0.4, 0.4, color);
+		Draw("X p: " + std::to_string(key.p_x) + " h: " + std::to_string(key.h_x), 0.0, 38.0, 0.4, 0.4, color);
+		Draw("Y p: " + std::to_string(key.p_y) + " h: " + std::to_string(key.h_y), 0.0, 48.0, 0.4, 0.4, color);
+		Draw("L p: " + std::to_string(key.p_l) + " h: " + std::to_string(key.h_l), 0.0, 58.0, 0.4, 0.4, color);
+		Draw("R p: " + std::to_string(key.p_r) + " h: " + std::to_string(key.h_r), 0.0, 68.0, 0.4, 0.4, color);
+		Draw("ZL p: " + std::to_string(key.p_zl) + " h: " + std::to_string(key.h_zl), 0.0, 78.0, 0.4, 0.4, color);
+		Draw("ZR p: " + std::to_string(key.p_zr) + " h: " + std::to_string(key.h_zr), 0.0, 88.0, 0.4, 0.4, color);
+		Draw("C↓ p: " + std::to_string(key.p_c_down) + " h: " + std::to_string(key.h_c_down), 0.0, 98.0, 0.4, 0.4,
+		     color);
+		Draw("C→ p: " + std::to_string(key.p_c_right) + " h: " + std::to_string(key.h_c_right), 0.0, 108.0, 0.4, 0.4,
+		     color);
+		Draw("C↑ p: " + std::to_string(key.p_c_up) + " h: " + std::to_string(key.h_c_up), 0.0, 118.0, 0.4, 0.4, color);
+		Draw("C← p: " + std::to_string(key.p_c_left) + " h: " + std::to_string(key.h_c_left), 0.0, 128.0, 0.4, 0.4,
+		     color);
+		Draw("D↓ p: " + std::to_string(key.p_d_down) + " h: " + std::to_string(key.h_d_down), 0.0, 138.0, 0.4, 0.4,
+		     color);
+		Draw("D→ p: " + std::to_string(key.p_d_right) + " h: " + std::to_string(key.h_d_right), 0.0, 148.0, 0.4, 0.4,
+		     color);
+		Draw("D↑ p: " + std::to_string(key.p_d_up) + " h: " + std::to_string(key.h_d_up), 0.0, 158.0, 0.4, 0.4, color);
+		Draw("D← p: " + std::to_string(key.p_d_left) + " h: " + std::to_string(key.h_d_left), 0.0, 168.0, 0.4, 0.4,
+		     color);
+		Draw("touch x: " + std::to_string(key.touch_x) + ", y: " + std::to_string(key.touch_y), 0.0, 178.0, 0.4, 0.4,
+		     color);
+		break;
+	case 2:
+		Draw_texture(var_square_image[0], DEF_DRAW_WEAK_BLUE, 0.0, 188.0, 110.0, 50.0);
+		break;
+	case 3:
+		Draw_texture(var_square_image[0], DEF_DRAW_WEAK_BLUE, 0.0, 218.0, 110.0, 20.0);
+		break;
+	}
 	Draw("RAM: " + std::to_string(var_free_ram / 1000.0).substr(0, 5) + " MB", 0.0, 218.0, 0.4, 0.4, color);
 	Draw("linear RAM: " + std::to_string(var_free_linear_ram / 1000.0 / 1000.0).substr(0, 5) + " MB", 0.0, 228.0, 0.4,
 	     0.4, color);
+	if (val != 3) {
+		Draw("CPU: " + std::to_string(C3D_GetProcessingTime()).substr(0, 5) + "ms", 0.0, 188.0, 0.4, 0.4, color);
+		Draw("GPU: " + std::to_string(C3D_GetDrawingTime()).substr(0, 5) + "ms", 0.0, 198.0, 0.4, 0.4, color);
+		Draw("Frametime: " + std::to_string(draw_frametime[19]).substr(0, 6) + "ms", 0.0, 208.0, 0.4, 0.4, color);
+	}
 }
 
 Result_with_string Draw_load_kanji_samples(void) {
