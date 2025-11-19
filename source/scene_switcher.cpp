@@ -311,7 +311,6 @@ bool Menu_main(void) {
 	// common updates
 	if (key.h_select && key.p_y) {
 		var_debug_mode = (var_debug_mode + 1) % 4;
-		logger.info("tmp", "dbg");
 	}
 	if (key.h_select && key.h_r && key.p_a) {
 		var_show_fps = !var_show_fps;
